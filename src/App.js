@@ -1,25 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from 'react';
+import CountryList from './components/CountryList';
 
-function App() {
+const App = () => {
+  const [fetching, setFetching] = useState(true);
+  const [countries, setCountries] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    (async () => {
+      const promise = await fetch('https://restcountries.com/v3.1/all');
+      const data = await promise.json();
+      setCountries(data);
+      setFetching(false);
+    })();
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+      {
+        fetching
+        ? <div>fetching data...</div>
+        : <CountryList searchTerm={searchTerm} setSearchTerm={setSearchTerm} countries={countries} />
+      }
     </div>
   );
-}
+};
 
 export default App;
